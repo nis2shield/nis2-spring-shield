@@ -25,15 +25,24 @@
 
 ## Installation
 
-Add the dependency to your `pom.xml`:
+Add the GitHub Packages repository and dependency to your `pom.xml`:
 
 ```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/nis2shield/nis2-spring-shield</url>
+    </repository>
+</repositories>
+
 <dependency>
     <groupId>com.nis2shield</groupId>
     <artifactId>nis2-spring-shield</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
+
+> **Note**: GitHub Packages requires authentication. Add your GitHub token to `~/.m2/settings.xml`. See [GitHub Packages docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry).
 
 ## Configuration
 

@@ -22,48 +22,49 @@ Il progetto sarà strutturato come uno **Spring Boot Starter** personalizzato.
 
 ## 🗺 Roadmap & To-Do List
 
-### Fase 1: Setup & Core (Log & Config)
+### Fase 1: Setup & Core (Log & Config) ✅
 L'obiettivo è avere un'applicazione che, una volta importata la libreria, logghi ogni richiesta in formato JSON compatibile con l'infrastruttura esistente.
 
-- [ ] **Project Skeleton**:
-    - [ ] `pom.xml` con dipendenze base (spring-boot-starter, jackson, slf4j).
-    - [ ] Struttura package `com.nis2shield.spring`.
-- [ ] **Configuration Properties**:
-    - [ ] Classe `Nis2Properties` (`nis2.enabled`, `nis2.logging.mode`).
-    - [ ] Supporto per `application.yml`.
-- [ ] **Nis2LogEngine (The Truth)**:
-    - [ ] Creazione filtro `Nis2AuditingFilter` (o `HandlerInterceptor`).
-    - [ ] Cattura Request/Response (facendo attenzione a `ContentCachingRequestWrapper`).
-    - [ ] Mascheramento dati sensibili (PII scrubbing).
-    - [ ] Output JSON standardizzato (uguale a Django: `user`, `ip`, `path`, `method`, `risk_score`).
+- [x] **Project Skeleton**:
+    - [x] `pom.xml` con dipendenze base (spring-boot-starter, jackson, slf4j).
+    - [x] Struttura package `com.nis2shield.spring`.
+- [x] **Configuration Properties**:
+    - [x] Classe `Nis2Properties` (`nis2.enabled`, `nis2.logging.mode`).
+    - [x] Supporto per `application.yml`.
+- [x] **Nis2LogEngine (The Truth)**:
+    - [x] Creazione filtro `Nis2AuditingFilter` (o `HandlerInterceptor`).
+    - [x] Cattura Request/Response (facendo attenzione a `ContentCachingRequestWrapper`).
+    - [x] Mascheramento dati sensibili (PII scrubbing).
+    - [x] Output JSON standardizzato (uguale a Django: `user`, `ip`, `path`, `method`, `risk_score`).
 
-### Fase 2: Active Defense (Protezione Attiva)
+### Fase 2: Active Defense (Protezione Attiva) ✅
 Porting dei meccanismi di difesa proattiva.
 
-- [ ] **Rate Limiting**:
-    - [ ] Integrazione `Bucket4j`.
-    - [ ] Sliding Window algorithm su base IP o User.
-- [ ] **IP Blocking**:
-    - [ ] Caricamento lista IP bloccati/sospetti (Tor exit nodes locally or via API).
+- [x] **Rate Limiting**:
+    - [x] Integrazione `Bucket4j`.
+    - [x] Sliding Window algorithm su base IP o User.
+- [x] **IP Blocking**:
+    - [x] Caricamento lista IP bloccati/sospetti (Tor exit nodes locally or via API).
 - [ ] **Security Headers**:
     - [ ] Set automatico di HSTS, X-Content-Type-Options, ecc. (se non gestiti da Spring Security).
 
-### Fase 3: Crittografia & Integrità (Art. 21)
+### Fase 3: Crittografia & Integrità (Art. 21) ✅
 Strumenti per la protezione dei dati a riposo.
 
-- [ ] **CryptoUtils**:
-    - [ ] Helper per AES-256 (riutilizzando lo standard usato in Django per compatibilità).
+- [x] **CryptoUtils**:
+    - [x] Helper per AES-256 (riutilizzando lo standard usato in Django per compatibilità).
     - [ ] `KeyRotationManager` stub.
-- [ ] **Log Hashing**:
-    - [ ] Calcolo SHA-256 di ogni log entry per garantire non-rifiuto (Chaining).
+- [x] **Log Hashing**:
+    - [x] Calcolo HMAC-SHA256 di ogni log entry per garantire non-rifiuto (Integrity Signing).
 
-### Fase 4: Integrazione & Rilascio
-- [ ] **Actuator Endpoints**:
-    - [ ] Endpoint `/actuator/nis2` per stato conformità.
+### Fase 4: Integrazione & Rilascio 🚧
+- [x] **Actuator Endpoints**:
+    - [x] Endpoint `/actuator/health` con `Nis2HealthIndicator` per stato conformità.
 - [ ] **Integrazione Infrastruttura**:
     - [ ] Test con Docker Compose + Fluent Bit (deve ingerire i log Java senza modifiche).
-- [ ] **Publishing**:
-    - [ ] Deploy su Maven Central (o GitHub Packages inizialmente).
+- [x] **Publishing**:
+    - [x] Deploy su GitHub Packages (v0.1.0).
+    - [ ] Deploy su Maven Central (futuro).
 
 ---
 
