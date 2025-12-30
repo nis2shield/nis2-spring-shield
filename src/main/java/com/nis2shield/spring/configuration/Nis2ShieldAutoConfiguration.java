@@ -1,6 +1,7 @@
 package com.nis2shield.spring.configuration;
 
 import com.nis2shield.spring.filter.Nis2AuditingFilter;
+import com.nis2shield.spring.filter.SecurityHeadersFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,6 +13,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import com.nis2shield.spring.filter.ActiveDefenseFilter;
 import com.nis2shield.spring.security.RateLimiter;
 import com.nis2shield.spring.security.TorBlocker;
+import com.nis2shield.spring.utils.KeyRotationManager;
 import java.time.Duration;
 import org.springframework.boot.actuate.health.HealthIndicator;
 
@@ -57,6 +59,11 @@ public class Nis2ShieldAutoConfiguration {
     }
     
     @Bean
+    public KeyRotationManager keyRotationManager() {
+        return new KeyRotationManager(90); // 90-day rotation interval
+    }
+    
+    @Bean
     @org.springframework.boot.autoconfigure.condition.ConditionalOnClass(HealthIndicator.class)
     public com.nis2shield.spring.actuator.Nis2HealthIndicator nis2HealthIndicator(TorBlocker torBlocker) {
         return new com.nis2shield.spring.actuator.Nis2HealthIndicator(torBlocker);
@@ -72,12 +79,23 @@ public class Nis2ShieldAutoConfiguration {
         
         ActiveDefenseFilter filter = new ActiveDefenseFilter(properties, rateLimiter, torBlocker);
         registrationBean.setFilter(filter);
-        // Run BEFORE AuditingFilter (-100) to block early? 
-        // No, usually we want to audit blocked requests too.
-        // So let's run it AFTER auditing (-90).
         registrationBean.setOrder(-90); 
         registrationBean.addUrlPatterns("/*");
         
         return registrationBean;
     }
+    
+    @Bean
+    @ConditionalOnProperty(prefix = "nis2.security-headers", name = "enabled", havingValue = "true", matchIfMissing = true)
+    public FilterRegistrationBean<SecurityHeadersFilter> securityHeadersFilter(Nis2Properties properties) {
+        FilterRegistrationBean<SecurityHeadersFilter> registrationBean = new FilterRegistrationBean<>();
+        
+        SecurityHeadersFilter filter = new SecurityHeadersFilter(properties);
+        registrationBean.setFilter(filter);
+        registrationBean.setOrder(-80); // Run after Active Defense
+        registrationBean.addUrlPatterns("/*");
+        
+        return registrationBean;
+    }
 }
+

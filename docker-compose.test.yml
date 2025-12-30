@@ -1,0 +1,56 @@
+# Docker Compose for NIS2 Spring Shield Integration Test
+# Tests that JSON logs are compatible with Fluent Bit + OpenSearch stack
+#
+# Usage:
+#   docker-compose -f docker-compose.test.yml up -d
+#   curl http://localhost:8080/api/test
+#   docker-compose -f docker-compose.test.yml logs fluentbit
+#   docker-compose -f docker-compose.test.yml down
+
+version: '3.8'
+
+services:
+  # Demo Spring Boot application (replace with your app)
+  spring-app:
+    image: eclipse-temurin:21-jdk
+    command: [ "java", "-jar", "/app/demo-app.jar" ]
+    volumes:
+      - ./demo_app/target:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - NIS2_ENABLED=true
+      - NIS2_ENCRYPTION_KEY=VGhpcyBJcyBBIFRlc3QgS2V5IEZvciBBRVMgMjU2IQ==
+      - NIS2_INTEGRITY_KEY=test-hmac-key-for-integration-testing
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "spring.nis2shield"
+    depends_on:
+      - fluentbit
+
+  # Fluent Bit for log ingestion
+  fluentbit:
+    image: fluent/fluent-bit:latest
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    command: [ "/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf" ]
+
+  # OpenSearch for log storage (optional - for full stack test)
+  opensearch:
+    image: opensearchproject/opensearch:2.11.1
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200 | grep -q 'cluster_name'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5

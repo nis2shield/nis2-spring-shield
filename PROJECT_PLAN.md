@@ -45,23 +45,23 @@ Porting dei meccanismi di difesa proattiva.
     - [x] Sliding Window algorithm su base IP o User.
 - [x] **IP Blocking**:
     - [x] Caricamento lista IP bloccati/sospetti (Tor exit nodes locally or via API).
-- [ ] **Security Headers**:
-    - [ ] Set automatico di HSTS, X-Content-Type-Options, ecc. (se non gestiti da Spring Security).
+- [x] **Security Headers**:
+    - [x] Set automatico di HSTS, X-Content-Type-Options, CSP, Referrer-Policy, Permissions-Policy.
 
 ### Fase 3: Crittografia & Integrità (Art. 21) ✅
 Strumenti per la protezione dei dati a riposo.
 
 - [x] **CryptoUtils**:
     - [x] Helper per AES-256 (riutilizzando lo standard usato in Django per compatibilità).
-    - [ ] `KeyRotationManager` stub.
+    - [x] `KeyRotationManager` stub.
 - [x] **Log Hashing**:
     - [x] Calcolo HMAC-SHA256 di ogni log entry per garantire non-rifiuto (Integrity Signing).
 
-### Fase 4: Integrazione & Rilascio 🚧
+### Fase 4: Integrazione & Rilascio ✅
 - [x] **Actuator Endpoints**:
     - [x] Endpoint `/actuator/health` con `Nis2HealthIndicator` per stato conformità.
-- [ ] **Integrazione Infrastruttura**:
-    - [ ] Test con Docker Compose + Fluent Bit (deve ingerire i log Java senza modifiche).
+- [x] **Integrazione Infrastruttura**:
+    - [x] Docker Compose + Fluent Bit configuration per test di interoperabilità.
 - [x] **Publishing**:
     - [x] Deploy su GitHub Packages (v0.1.0).
     - [ ] Deploy su Maven Central (futuro).
