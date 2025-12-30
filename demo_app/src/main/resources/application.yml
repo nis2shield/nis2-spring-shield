@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+nis2:
+  enabled: true
+  encryption-key: "VGhpcyBJcyBBIFRlc3QgS2V5IEZvciBBRVMgMjU2IQ==" # Base64 encoded dummy key
+  integrity-key: "super-secret-hmac-key"
+  active-defense:
+    rate-limit-enabled: true
+    rate-limit-capacity: 5 # Low limit for testing
+    rate-limit-window-seconds: 60
+  logging:
+    enabled: true
+    encrypt-pii: true
