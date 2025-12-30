@@ -57,14 +57,59 @@ Strumenti per la protezione dei dati a riposo.
 - [x] **Log Hashing**:
     - [x] Calcolo HMAC-SHA256 di ogni log entry per garantire non-rifiuto (Integrity Signing).
 
-### Fase 4: Integrazione & Rilascio ✅
+### Fase 4: Integrazione & Rilascio ✅ COMPLETE
 - [x] **Actuator Endpoints**:
     - [x] Endpoint `/actuator/health` con `Nis2HealthIndicator` per stato conformità.
 - [x] **Integrazione Infrastruttura**:
     - [x] Docker Compose + Fluent Bit configuration per test di interoperabilità.
 - [x] **Publishing**:
     - [x] Deploy su GitHub Packages (v0.1.0).
-    - [ ] Deploy su Maven Central (futuro).
+    - [x] **Deploy su Maven Central** ✅ (30 Dicembre 2025).
+- [x] **Documentazione**:
+    - [x] README aggiornato con badge Maven Central.
+    - [x] Pagina web nis2shield.com/spring-shield aggiornata.
+
+---
+
+## 🚀 v0.1.0 - RELEASED (30 Dicembre 2025)
+
+Il progetto **nis2-spring-shield v0.1.0** è stato rilasciato su Maven Central!
+
+```xml
+<dependency>
+    <groupId>com.nis2shield</groupId>
+    <artifactId>nis2-spring-shield</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+---
+
+## 🗺 Future Roadmap (v0.2.0+)
+
+### Fase 5: Session Security & Advanced Features
+- [ ] **SessionGuard**:
+    - [ ] Rilevamento session hijacking (device fingerprint change).
+    - [ ] Invalidazione automatica sessioni sospette.
+- [ ] **KeyRotationManager con KMS**:
+    - [ ] Integrazione con AWS KMS / HashiCorp Vault.
+    - [ ] Rotazione automatica chiavi AES.
+
+### Fase 6: Multi-SIEM & Notifications
+- [ ] **Multi-SIEM Connectors**:
+    - [ ] Supporto Splunk HEC.
+    - [ ] Supporto IBM QRadar.
+    - [ ] Supporto Graylog GELF.
+    - [ ] Supporto Datadog.
+- [ ] **Webhook Notifications**:
+    - [ ] Alert su eventi critici (rate limit exceeded, blocked IP, etc.).
+    - [ ] Integrazione Slack/Microsoft Teams.
+
+### Fase 7: Compliance Engine
+- [ ] **check_nis2 CLI**:
+    - [ ] Comando per verificare conformità applicazione (come Django).
+- [ ] **Compliance Reports**:
+    - [ ] Generazione report PDF/HTML per auditor.
 
 ---
 
@@ -87,3 +132,4 @@ Il formato JSON deve essere identico a quello prodotto dal middleware Django per
   "metadata": {...}
 }
 ```
+
