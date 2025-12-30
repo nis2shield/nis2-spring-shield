@@ -1,5 +1,9 @@
 # NIS2 Spring Shield
 
+[![Java CI with Maven](https://github.com/nis2shield/nis2-spring-shield/actions/workflows/maven.yml/badge.svg)](https://github.com/nis2shield/nis2-spring-shield/actions/workflows/maven.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Java 21](https://img.shields.io/badge/Java-21-orange)](https://jdk.java.net/21/)
+
 **NIS2 Spring Shield** is a Spring Boot Starter designed to help Java enterprise applications comply with the **NIS2 Directive** requirements. It provides ready-to-use forensic logging, active defense mechanisms, and data integrity protection.
 
 ## Features
