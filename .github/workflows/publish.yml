@@ -1,16 +1,13 @@
-name: Publish to GitHub Packages
+name: Publish to Maven Central
 
 on:
   release:
-    types: [created]
+    types: [published]
   workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     
     steps:
     - uses: actions/checkout@v4
@@ -21,13 +18,18 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: 'maven'
-        server-id: github
-        settings-path: ${{ github.workspace }}
+        server-id: ossrh
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml -DskipTests
 
-    - name: Publish to GitHub Packages
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+    - name: Publish to Maven Central
+      run: mvn deploy -P release -DskipTests
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
