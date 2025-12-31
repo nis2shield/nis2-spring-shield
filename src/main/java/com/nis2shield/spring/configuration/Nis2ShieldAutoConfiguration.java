@@ -14,6 +14,9 @@ import com.nis2shield.spring.filter.ActiveDefenseFilter;
 import com.nis2shield.spring.security.RateLimiter;
 import com.nis2shield.spring.security.TorBlocker;
 import com.nis2shield.spring.utils.KeyRotationManager;
+import com.nis2shield.spring.compliance.Nis2ComplianceChecker;
+import com.nis2shield.spring.compliance.Nis2ComplianceRunner;
+import com.nis2shield.spring.compliance.ComplianceReportService;
 import java.time.Duration;
 import org.springframework.boot.actuate.health.HealthIndicator;
 
@@ -96,6 +99,23 @@ public class Nis2ShieldAutoConfiguration {
         registrationBean.addUrlPatterns("/*");
         
         return registrationBean;
+    }
+    
+    // =============== Compliance Engine Beans ===============
+    
+    @Bean
+    public Nis2ComplianceChecker nis2ComplianceChecker(Nis2Properties properties) {
+        return new Nis2ComplianceChecker(properties);
+    }
+    
+    @Bean
+    public Nis2ComplianceRunner nis2ComplianceRunner(Nis2ComplianceChecker complianceChecker) {
+        return new Nis2ComplianceRunner(complianceChecker);
+    }
+    
+    @Bean
+    public ComplianceReportService complianceReportService(Nis2ComplianceChecker complianceChecker) {
+        return new ComplianceReportService(complianceChecker);
     }
 }
 

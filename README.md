@@ -92,6 +92,7 @@ Once added, the starter automatically configures:
 }
 ```
 
+
 ## Actuator Endpoint
 
 Check the status of the shield:
@@ -115,6 +116,34 @@ Response:
   }
 }
 ```
+
+## Compliance CLI (`check_nis2`)
+
+You can audit your application configuration against NIS2 requirements directly from the command line:
+
+```bash
+java -jar your-app.jar --check-nis2
+```
+
+**Output Example:**
+
+```text
+[NIS2 SHIELD AUDIT REPORT]
+Application: Spring Boot Application
+Generated: 2025-12-31T12:00:00Z
+------------------------------------------------
+[PASS] NIS2 Shield Enabled (General)
+       NIS2 Shield middleware is active
+[PASS] Integrity Key (Art. 21.2.h)
+       HMAC signing key for log integrity (min 32 chars)
+[FAIL] Encryption Key (Art. 21.2.f)
+       AES encryption key for PII (16/24/32 chars for AES-128/192/256)
+...
+------------------------------------------------
+COMPLIANCE SCORE: 85/100
+```
+
+Also generates a detailed HTML report for auditors.
 
 ## Release Process
 

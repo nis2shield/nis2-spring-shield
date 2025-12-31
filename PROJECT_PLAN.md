@@ -108,11 +108,13 @@ Il progetto **nis2-spring-shield v0.2.0** include Multi-SIEM Connectors, Webhook
     - [x] Alert su eventi critici (rate limit exceeded, blocked IP, etc.).
     - [x] Supporto Slack/Microsoft Teams via webhook URL.
 
-### Fase 7: Compliance Engine
-- [ ] **check_nis2 CLI**:
-    - [ ] Comando per verificare conformità applicazione (come Django).
-- [ ] **Compliance Reports**:
-    - [ ] Generazione report PDF/HTML per auditor.
+### Fase 7: Compliance Engine ✅ COMPLETE
+- [x] **check_nis2 CLI**:
+    - [x] `Nis2ComplianceChecker` service per audit configurazione.
+    - [x] `Nis2ComplianceRunner` per CLI via `--check-nis2`.
+- [x] **Compliance Reports**:
+    - [x] `ComplianceReportService` per generazione report HTML/JSON.
+    - [x] Template HTML styled con branding NIS2 Shield.
 
 ---
 
