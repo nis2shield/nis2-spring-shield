@@ -11,7 +11,7 @@
 	
 	<groupId>com.nis2shield</groupId>
 	<artifactId>nis2-spring-shield</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 	<packaging>jar</packaging>
 	
 	<name>nis2-spring-shield</name>
