@@ -87,13 +87,14 @@ Il progetto **nis2-spring-shield v0.1.0** è stato rilasciato su Maven Central!
 
 ## 🗺 Future Roadmap (v0.2.0+)
 
-### Fase 5: Session Security & Advanced Features
-- [ ] **SessionGuard**:
-    - [ ] Rilevamento session hijacking (device fingerprint change).
-    - [ ] Invalidazione automatica sessioni sospette.
-- [ ] **KeyRotationManager con KMS**:
-    - [ ] Integrazione con AWS KMS / HashiCorp Vault.
-    - [ ] Rotazione automatica chiavi AES.
+### Fase 5: Session Security & Advanced Features ✅ COMPLETE
+- [x] **SessionGuard**:
+    - [x] Rilevamento session hijacking (device fingerprint change).
+    - [x] Invalidazione automatica sessioni sospette.
+- [x] **KeyRotationManager con KMS**:
+    - [x] Interfaccia `KmsProvider` per KMS esterni.
+    - [x] Implementazione `VaultKmsProvider` per HashiCorp Vault.
+    - [x] Configurazione rotazione chiavi (90 giorni default).
 
 ### Fase 6: Multi-SIEM & Notifications ✅ COMPLETE
 - [x] **Multi-SIEM Connectors**:

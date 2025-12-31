@@ -207,6 +207,58 @@ public class Nis2Properties {
         public void setWebhook(Webhook webhook) { this.webhook = webhook; }
     }
 
+    /**
+     * Session security configuration.
+     */
+    private Session session = new Session();
+
+    public static class Session {
+        private boolean guardEnabled = false;
+        private boolean includeIpInFingerprint = false;
+        private boolean invalidateOnMismatch = true;
+
+        public boolean isGuardEnabled() { return guardEnabled; }
+        public void setGuardEnabled(boolean guardEnabled) { this.guardEnabled = guardEnabled; }
+        public boolean isIncludeIpInFingerprint() { return includeIpInFingerprint; }
+        public void setIncludeIpInFingerprint(boolean includeIpInFingerprint) { this.includeIpInFingerprint = includeIpInFingerprint; }
+        public boolean isInvalidateOnMismatch() { return invalidateOnMismatch; }
+        public void setInvalidateOnMismatch(boolean invalidateOnMismatch) { this.invalidateOnMismatch = invalidateOnMismatch; }
+    }
+
+    /**
+     * Key Management Service (KMS) configuration.
+     */
+    private Kms kms = new Kms();
+
+    public static class Kms {
+        private String provider = "local"; // local, vault, aws
+        private Vault vault = new Vault();
+        private long rotationIntervalDays = 90;
+
+        public static class Vault {
+            private String address;
+            private String token;
+            private String transitPath = "transit";
+            private String keyName = "nis2-encryption-key";
+
+            public String getAddress() { return address; }
+            public void setAddress(String address) { this.address = address; }
+            public String getToken() { return token; }
+            public void setToken(String token) { this.token = token; }
+            public String getTransitPath() { return transitPath; }
+            public void setTransitPath(String transitPath) { this.transitPath = transitPath; }
+            public String getKeyName() { return keyName; }
+            public void setKeyName(String keyName) { this.keyName = keyName; }
+        }
+
+        public String getProvider() { return provider; }
+        public void setProvider(String provider) { this.provider = provider; }
+        public Vault getVault() { return vault; }
+        public void setVault(Vault vault) { this.vault = vault; }
+        public long getRotationIntervalDays() { return rotationIntervalDays; }
+        public void setRotationIntervalDays(long rotationIntervalDays) { this.rotationIntervalDays = rotationIntervalDays; }
+    }
+
     // Getters and Setters
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
@@ -224,4 +276,9 @@ public class Nis2Properties {
     public void setSiem(Siem siem) { this.siem = siem; }
     public Notifications getNotifications() { return notifications; }
     public void setNotifications(Notifications notifications) { this.notifications = notifications; }
+    public Session getSession() { return session; }
+    public void setSession(Session session) { this.session = session; }
+    public Kms getKms() { return kms; }
+    public void setKms(Kms kms) { this.kms = kms; }
 }
+
