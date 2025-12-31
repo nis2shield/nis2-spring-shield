@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (skip actual Maven Central publish)'
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -22,14 +27,20 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        # gpg-passphrase removed to avoid settings-security.xml issues
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml -DskipTests
 
     - name: Publish to Maven Central
+      if: ${{ github.event.inputs.dry_run != 'true' }}
       run: mvn deploy -P release -DskipTests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-
+    
+    - name: Dry run - skip publish
+      if: ${{ github.event.inputs.dry_run == 'true' }}
+      run: |
+        echo "🧪 Dry run mode - skipping Maven Central publish"
+        echo "Package would be published:"
+        ls -la target/*.jar
