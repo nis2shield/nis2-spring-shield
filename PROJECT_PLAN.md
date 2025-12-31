@@ -95,15 +95,15 @@ Il progetto **nis2-spring-shield v0.1.0** è stato rilasciato su Maven Central!
     - [ ] Integrazione con AWS KMS / HashiCorp Vault.
     - [ ] Rotazione automatica chiavi AES.
 
-### Fase 6: Multi-SIEM & Notifications
-- [ ] **Multi-SIEM Connectors**:
-    - [ ] Supporto Splunk HEC.
-    - [ ] Supporto IBM QRadar.
-    - [ ] Supporto Graylog GELF.
-    - [ ] Supporto Datadog.
-- [ ] **Webhook Notifications**:
-    - [ ] Alert su eventi critici (rate limit exceeded, blocked IP, etc.).
-    - [ ] Integrazione Slack/Microsoft Teams.
+### Fase 6: Multi-SIEM & Notifications ✅ COMPLETE
+- [x] **Multi-SIEM Connectors**:
+    - [x] Supporto Splunk HEC.
+    - [x] Supporto IBM QRadar (CEF/Syslog).
+    - [x] Supporto Graylog GELF.
+    - [x] Supporto Datadog.
+- [x] **Webhook Notifications**:
+    - [x] Alert su eventi critici (rate limit exceeded, blocked IP, etc.).
+    - [x] Supporto Slack/Microsoft Teams via webhook URL.
 
 ### Fase 7: Compliance Engine
 - [ ] **check_nis2 CLI**:
