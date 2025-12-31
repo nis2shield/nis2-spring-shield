@@ -1,0 +1,46 @@
+# nis2-spring-shield - AI Context
+
+## What is this library?
+A Spring Boot Starter for NIS2 Directive compliance.
+Provides forensic logging, rate limiting, Tor blocking, and health monitoring.
+
+## Maven Dependency
+```xml
+<dependency>
+    <groupId>com.nis2shield</groupId>
+    <artifactId>nis2-spring-shield</artifactId>
+    <version>0.3.0</version>
+</dependency>
+```
+
+## Key Components (Auto-configured)
+- `Nis2AuditingFilter` - JSON logging with HMAC-SHA256 integrity
+- `ActiveDefenseFilter` - Rate limiting via Bucket4j, Tor blocking
+- `Nis2HealthIndicator` - Actuator health endpoint
+
+## Configuration (application.yml)
+```yaml
+nis2:
+  enabled: true
+  encryption-key: ${NIS2_AES_KEY}  # Base64 AES-256
+  integrity-key: ${NIS2_HMAC_KEY}
+  logging:
+    enabled: true
+    encrypt-pii: true
+    anonymize-ip: true
+  active-defense:
+    rate-limit-enabled: true
+    rate-limit-capacity: 100
+    rate-limit-window-seconds: 60
+    block-tor-exit-nodes: true
+```
+
+## CLI Audit
+```bash
+java -jar app.jar --check-nis2
+```
+
+## NIS2 Articles Addressed
+- Art. 21.2.a: Rate limiting, IP blocking
+- Art. 21.2.e: DoS protection
+- Art. 21.2.h: Log integrity, PII encryption

@@ -22,6 +22,27 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * NIS2 compliance auditing filter for Spring Boot applications.
+ * Intercepts all HTTP requests, logs them in JSON format with HMAC-SHA256 integrity
+ * signatures, and optionally encrypts PII fields.
+ *
+ * <p>The filter is auto-configured when nis2-spring-shield is on the classpath.</p>
+ *
+ * <p>Example configuration in application.yml:</p>
+ * <pre>
+ * nis2:
+ *   enabled: true
+ *   encryption-key: "VGhpcyBJcyBBIFRlc3QgS2V5IEZvciBBRVMgMjU2IQ=="
+ *   integrity-key: "your-secret-hmac-key"
+ *   logging:
+ *     enabled: true
+ *     encrypt-pii: true
+ *     anonymize-ip: true
+ * </pre>
+ *
+ * @see com.nis2shield.spring.configuration.Nis2Properties
+ */
 public class Nis2AuditingFilter extends OncePerRequestFilter {
 
     private static final Logger auditLogger = LoggerFactory.getLogger("NIS2_AUDIT_LOG");

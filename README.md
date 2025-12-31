@@ -7,6 +7,16 @@
 
 **NIS2 Spring Shield** is a Spring Boot Starter designed to help Java enterprise applications comply with the **NIS2 Directive** requirements. It provides ready-to-use forensic logging, active defense mechanisms, and data integrity protection.
 
+## Why this package?
+
+Companies subject to NIS2 Directive require demonstrable compliance with strict logging, monitoring, and security requirements. This Spring Boot Starter provides:
+
+1. **Forensic Logging**: JSON structured logs with HMAC-SHA256 integrity (Art. 21.2.h)
+2. **PII Encryption**: AES-256 encryption for sensitive fields (GDPR-compliant)
+3. **Rate Limiting**: Bucket4j sliding window to prevent DoS/Brute Force (Art. 21.2.e)
+4. **Tor Blocking**: Automatic blocking of known Tor exit nodes (Art. 21.2.a)
+5. **Health Monitoring**: Spring Actuator integration for operations
+
 ## Features
 
 *   **Forensic Logging (Audit):**
@@ -144,6 +154,51 @@ COMPLIANCE SCORE: 85/100
 ```
 
 Also generates a detailed HTML report for auditors.
+
+## 📖 Recipes
+
+### Banking API with Strict Configuration
+
+```yaml
+# application.yml
+nis2:
+  enabled: true
+  encryption-key: ${NIS2_AES_KEY}  # Base64 AES-256
+  integrity-key: ${NIS2_HMAC_KEY}
+  
+  logging:
+    enabled: true
+    encrypt-pii: true
+    anonymize-ip: true
+  
+  active-defense:
+    rate-limit-enabled: true
+    rate-limit-capacity: 30      # Strict: 30 req/min for banking
+    rate-limit-window-seconds: 60
+    block-tor-exit-nodes: true
+```
+
+### E-commerce with Relaxed Rate Limits
+
+```yaml
+nis2:
+  enabled: true
+  logging:
+    enabled: true
+    anonymize-ip: true
+  active-defense:
+    rate-limit-enabled: true
+    rate-limit-capacity: 200
+    rate-limit-window-seconds: 60
+    block-tor-exit-nodes: false  # Allow Tor for privacy
+```
+
+### Microservice with Custom Compliance Runner
+
+```bash
+# Run compliance audit at startup
+java -jar your-app.jar --check-nis2
+```
 
 ## Release Process
 
