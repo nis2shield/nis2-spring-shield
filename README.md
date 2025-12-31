@@ -116,6 +116,20 @@ Response:
 }
 ```
 
+## Release Process
+
+Automated releases are handled via GitHub Actions.
+
+1. **Create Tag**: Push a new tag (e.g., `v0.2.0`).
+2. **GitHub Release**: Create a release in the GitHub UI.
+3. **CI/CD**: The `publish.yml` workflow triggers automatically:
+    - Builds the project.
+    - Generates Javadoc and Source JARs.
+    - Signs artifacts with GPG (Secrets: `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`).
+    - Deploys to **Maven Central** (Secrets: `OSSRH_USERNAME`, `OSSRH_TOKEN`).
+    
+---
+
 ## License
 
 MIT License - See LICENSE file for details.
