@@ -85,7 +85,9 @@ Il progetto **nis2-spring-shield v0.1.0** è stato rilasciato su Maven Central!
 
 ---
 
-## 🗺 Future Roadmap (v0.2.0+)
+## 🚀 v0.2.0 - RELEASED (31 Dicembre 2025)
+
+Il progetto **nis2-spring-shield v0.2.0** include Multi-SIEM Connectors, Webhooks e Session Security.
 
 ### Fase 5: Session Security & Advanced Features ✅ COMPLETE
 - [x] **SessionGuard**:
