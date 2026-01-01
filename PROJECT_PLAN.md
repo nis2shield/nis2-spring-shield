@@ -1,79 +1,79 @@
 # Spring NIS2 Shield - Project Plan
 
-## 🎯 Obiettivo
-Porting della logica di `django-nis2-shield` nell'ecosistema Java Enterprise tramite uno **Spring Boot Starter**.
-L'obiettivo è fornire una libreria "plug-and-play" che renda conforme un'applicazione Spring Boot alla normativa NIS2 (Art. 21) semplicemente aggiungendo una dipendenza.
+## 🎯 Goal
+Port the logic of `django-nis2-shield` to the Java Enterprise ecosystem via a **Spring Boot Starter**.
+The goal is to provide a "plug-and-play" library that makes a Spring Boot application compliant with NIS2 regulations (Art. 21) simply by adding a dependency.
 
-## 🏗 Architettura
-Il progetto sarà strutturato come uno **Spring Boot Starter** personalizzato.
-- **AutoConfiguration**: Configurazione automatica dei bean se le proprietà sono presenti.
-- **Interceptor/Filter**: Per il logging delle richieste e l'analisi del traffico.
-- **AOP (Aspect Oriented Programming)**: Per annotazioni custom su metodi specifici.
+## 🏗 Architecture
+The project will be structured as a custom **Spring Boot Starter**.
+- **AutoConfiguration**: Automatic configuration of beans if properties are present.
+- **Interceptor/Filter**: For logging requests and traffic analysis.
+- **AOP (Aspect Oriented Programming)**: For custom annotations on specific methods.
 
-### Stack Tecnologico
+### Technology Stack
 - **Java**: 21 (LTS)
 - **Framework**: Spring Boot 3.x
 - **Build Tool**: Maven
 - **Logging**: SLF4J + Logback (JSON format)
-- **Rate Limiting**: Bucket4j (equivalente Java robusto)
+- **Rate Limiting**: Bucket4j (robust Java equivalent)
 - **Security**: Spring Security integration
 
 ---
 
 ## 🗺 Roadmap & To-Do List
 
-### Fase 1: Setup & Core (Log & Config) ✅
-L'obiettivo è avere un'applicazione che, una volta importata la libreria, logghi ogni richiesta in formato JSON compatibile con l'infrastruttura esistente.
+### Phase 1: Setup & Core (Log & Config) ✅
+Goal: Have an application that, once the library is imported, logs every request in JSON format compatible with the existing infrastructure.
 
 - [x] **Project Skeleton**:
-    - [x] `pom.xml` con dipendenze base (spring-boot-starter, jackson, slf4j).
-    - [x] Struttura package `com.nis2shield.spring`.
+    - [x] `pom.xml` with base dependencies (spring-boot-starter, jackson, slf4j).
+    - [x] `com.nis2shield.spring` package structure.
 - [x] **Configuration Properties**:
-    - [x] Classe `Nis2Properties` (`nis2.enabled`, `nis2.logging.mode`).
-    - [x] Supporto per `application.yml`.
+    - [x] `Nis2Properties` class (`nis2.enabled`, `nis2.logging.mode`).
+    - [x] Support for `application.yml`.
 - [x] **Nis2LogEngine (The Truth)**:
-    - [x] Creazione filtro `Nis2AuditingFilter` (o `HandlerInterceptor`).
-    - [x] Cattura Request/Response (facendo attenzione a `ContentCachingRequestWrapper`).
-    - [x] Mascheramento dati sensibili (PII scrubbing).
-    - [x] Output JSON standardizzato (uguale a Django: `user`, `ip`, `path`, `method`, `risk_score`).
+    - [x] Creation of `Nis2AuditingFilter` (or `HandlerInterceptor`).
+    - [x] Request/Response capture (paying attention to `ContentCachingRequestWrapper`).
+    - [x] Sensitive data masking (PII scrubbing).
+    - [x] Standardized JSON output (same as Django: `user`, `ip`, `path`, `method`, `risk_score`).
 
-### Fase 2: Active Defense (Protezione Attiva) ✅
-Porting dei meccanismi di difesa proattiva.
+### Phase 2: Active Defense (Proactive Protection) ✅
+Porting of proactive defense mechanisms.
 
 - [x] **Rate Limiting**:
-    - [x] Integrazione `Bucket4j`.
-    - [x] Sliding Window algorithm su base IP o User.
+    - [x] `Bucket4j` integration.
+    - [x] Sliding Window algorithm based on IP or User.
 - [x] **IP Blocking**:
-    - [x] Caricamento lista IP bloccati/sospetti (Tor exit nodes locally or via API).
+    - [x] Loading blocked/suspicious IP list (Tor exit nodes locally or via API).
 - [x] **Security Headers**:
-    - [x] Set automatico di HSTS, X-Content-Type-Options, CSP, Referrer-Policy, Permissions-Policy.
+    - [x] Automatic setting of HSTS, X-Content-Type-Options, CSP, Referrer-Policy, Permissions-Policy.
 
-### Fase 3: Crittografia & Integrità (Art. 21) ✅
-Strumenti per la protezione dei dati a riposo.
+### Phase 3: Cryptography & Integrity (Art. 21) ✅
+Tools for data protection at rest.
 
 - [x] **CryptoUtils**:
-    - [x] Helper per AES-256 (riutilizzando lo standard usato in Django per compatibilità).
+    - [x] AES-256 helper (reusing the standard used in Django for compatibility).
     - [x] `KeyRotationManager` stub.
 - [x] **Log Hashing**:
-    - [x] Calcolo HMAC-SHA256 di ogni log entry per garantire non-rifiuto (Integrity Signing).
+    - [x] HMAC-SHA256 calculation for every log entry to ensure non-repudiation (Integrity Signing).
 
-### Fase 4: Integrazione & Rilascio ✅ COMPLETE
+### Phase 4: Integration & Release ✅ COMPLETE
 - [x] **Actuator Endpoints**:
-    - [x] Endpoint `/actuator/health` con `Nis2HealthIndicator` per stato conformità.
-- [x] **Integrazione Infrastruttura**:
-    - [x] Docker Compose + Fluent Bit configuration per test di interoperabilità.
+    - [x] `/actuator/health` endpoint with `Nis2HealthIndicator` for compliance status.
+- [x] **Infrastructure Integration**:
+    - [x] Docker Compose + Fluent Bit configuration for interoperability testing.
 - [x] **Publishing**:
-    - [x] Deploy su GitHub Packages (v0.1.0).
-    - [x] **Deploy su Maven Central** ✅ (30 Dicembre 2025).
-- [x] **Documentazione**:
-    - [x] README aggiornato con badge Maven Central.
-    - [x] Pagina web nis2shield.com/spring-shield aggiornata.
+    - [x] Deploy to GitHub Packages (v0.1.0).
+    - [x] **Deploy to Maven Central** ✅ (December 30, 2025).
+- [x] **Documentation**:
+    - [x] README updated with Maven Central badge.
+    - [x] Webpage nis2shield.com/spring-shield updated.
 
 ---
 
-## 🚀 v0.1.0 - RELEASED (30 Dicembre 2025)
+## 🚀 v0.1.0 - RELEASED (December 30, 2025)
 
-Il progetto **nis2-spring-shield v0.1.0** è stato rilasciato su Maven Central!
+The **nis2-spring-shield v0.1.0** project has been released on Maven Central!
 
 ```xml
 <dependency>
@@ -85,41 +85,41 @@ Il progetto **nis2-spring-shield v0.1.0** è stato rilasciato su Maven Central!
 
 ---
 
-## 🚀 v0.2.0 - RELEASED (31 Dicembre 2025)
+## 🚀 v0.2.0 - RELEASED (December 31, 2025)
 
-Il progetto **nis2-spring-shield v0.2.0** include Multi-SIEM Connectors, Webhooks e Session Security.
+The **nis2-spring-shield v0.2.0** project includes Multi-SIEM Connectors, Webhooks, and Session Security.
 
-### Fase 5: Session Security & Advanced Features ✅ COMPLETE
+### Phase 5: Session Security & Advanced Features ✅ COMPLETE
 - [x] **SessionGuard**:
-    - [x] Rilevamento session hijacking (device fingerprint change).
-    - [x] Invalidazione automatica sessioni sospette.
-- [x] **KeyRotationManager con KMS**:
-    - [x] Interfaccia `KmsProvider` per KMS esterni.
-    - [x] Implementazione `VaultKmsProvider` per HashiCorp Vault.
-    - [x] Configurazione rotazione chiavi (90 giorni default).
+    - [x] Session hijacking detection (device fingerprint change).
+    - [x] Automatic invalidation of suspicious sessions.
+- [x] **KeyRotationManager with KMS**:
+    - [x] `KmsProvider` interface for external KMS.
+    - [x] `VaultKmsProvider` implementation for HashiCorp Vault.
+    - [x] Key rotation configuration (90 days default).
 
-### Fase 6: Multi-SIEM & Notifications ✅ COMPLETE
+### Phase 6: Multi-SIEM & Notifications ✅ COMPLETE
 - [x] **Multi-SIEM Connectors**:
-    - [x] Supporto Splunk HEC.
-    - [x] Supporto IBM QRadar (CEF/Syslog).
-    - [x] Supporto Graylog GELF.
-    - [x] Supporto Datadog.
+    - [x] Splunk HEC support.
+    - [x] IBM QRadar (CEF/Syslog) support.
+    - [x] Graylog GELF support.
+    - [x] Datadog support.
 - [x] **Webhook Notifications**:
-    - [x] Alert su eventi critici (rate limit exceeded, blocked IP, etc.).
-    - [x] Supporto Slack/Microsoft Teams via webhook URL.
+    - [x] Alert on critical events (rate limit exceeded, blocked IP, etc.).
+    - [x] Slack/Microsoft Teams support via webhook URL.
 
-### Fase 7: Compliance Engine ✅ COMPLETE
+### Phase 7: Compliance Engine ✅ COMPLETE
 - [x] **check_nis2 CLI**:
-    - [x] `Nis2ComplianceChecker` service per audit configurazione.
-    - [x] `Nis2ComplianceRunner` per CLI via `--check-nis2`.
+    - [x] `Nis2ComplianceChecker` service for configuration audit.
+    - [x] `Nis2ComplianceRunner` for CLI via `--check-nis2`.
 - [x] **Compliance Reports**:
-    - [x] `ComplianceReportService` per generazione report HTML/JSON.
-    - [x] Template HTML styled con branding NIS2 Shield.
+    - [x] `ComplianceReportService` for HTML/JSON report generation.
+    - [x] HTML template styled with NIS2 Shield branding.
 
 ---
 
-## 📝 Convenzioni Log (Interoperabilità)
-Il formato JSON deve essere identico a quello prodotto dal middleware Django per garantire che la dashboard Kibana/OpenSearch funzioni per entrambi.
+## 📝 Log Conventions (Interoperability)
+The JSON format must be identical to that produced by the Django middleware to ensure that the Kibana/OpenSearch dashboard works for both.
 
 ```json
 {
@@ -137,4 +137,3 @@ Il formato JSON deve essere identico a quello prodotto dal middleware Django per
   "metadata": {...}
 }
 ```
-
