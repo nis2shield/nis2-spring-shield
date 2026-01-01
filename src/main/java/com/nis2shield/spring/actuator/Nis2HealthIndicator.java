@@ -4,6 +4,15 @@ import com.nis2shield.spring.security.TorBlocker;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 
+/**
+ * NIS2 Shield Health Indicator.
+ * <p>
+ * Exposes internal metrics (e.g., blocked Tor IPs count, module status)
+ * to Spring Boot Actuator.
+ * </p>
+ * 
+ * Access via: <code>/actuator/health/nis2</code>
+ */
 public class Nis2HealthIndicator implements HealthIndicator {
 
     private final TorBlocker torBlocker;

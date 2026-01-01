@@ -2,6 +2,35 @@ package com.nis2shield.spring.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Configuration properties for NIS2 Shield.
+ * <p>
+ * Binds to `nis2.*` properties in `application.yml`.
+ * </p>
+ * 
+ * <h3>Example Configuration</h3>
+ * <pre>
+ * nis2:
+ *   enabled: true
+ *   integrity-key: "${NIS2_HMAC_KEY}"
+ *   encryption-key: "${NIS2_ENC_KEY}"
+ *   
+ *   logging:
+ *     enabled: true
+ *     anonymize-ip: true
+ *     encrypt-pii: true
+ *     
+ *   active-defense:
+ *     rate-limit-enabled: true
+ *     block-tor-exit-nodes: true
+ *     
+ *   siem:
+ *     splunk:
+ *       enabled: true
+ *       url: "https://splunk.example.com:8088"
+ *       token: "${SPLUNK_TOKEN}"
+ * </pre>
+ */
 @ConfigurationProperties(prefix = "nis2")
 public class Nis2Properties {
 

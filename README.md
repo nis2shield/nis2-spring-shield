@@ -7,15 +7,17 @@
 
 **NIS2 Spring Shield** is a Spring Boot Starter designed to help Java enterprise applications comply with the **NIS2 Directive** requirements. It provides ready-to-use forensic logging, active defense mechanisms, and data integrity protection.
 
-## Why this package?
+### The "Security-First" Spring Boot Starter for NIS2 Compliance.
 
-Companies subject to NIS2 Directive require demonstrable compliance with strict logging, monitoring, and security requirements. This Spring Boot Starter provides:
+Companies subject to NIS2 Directive need **demonstrable compliance**. This starter provides:
 
-1. **Forensic Logging**: JSON structured logs with HMAC-SHA256 integrity (Art. 21.2.h)
-2. **PII Encryption**: AES-256 encryption for sensitive fields (GDPR-compliant)
-3. **Rate Limiting**: Bucket4j sliding window to prevent DoS/Brute Force (Art. 21.2.e)
-4. **Tor Blocking**: Automatic blocking of known Tor exit nodes (Art. 21.2.a)
-5. **Health Monitoring**: Spring Actuator integration for operations
+1.  **Forensic Logging**: JSON structured logs with HMAC-SHA256 integrity (Art. 21.2.h)
+2.  **PII Encryption**: AES-256 encryption for sensitive fields (GDPR-compliant)
+3.  **Active Defense**: Rate Limiting (Bucket4j) & Tor Blocking (Art. 21.2.e)
+4.  **Health Monitoring**: Spring Actuator integration for operations
+5.  **Multi-SIEM**: Presets for Splunk, Datadog, QRadar.
+
+> **Part of the NIS2 Shield Ecosystem**: Use with [`@nis2shield/react-guard`](https://github.com/nis2shield/react-guard) for client-side protection and [`nis2shield/infrastructure`](https://github.com/nis2shield/infrastructure) for a full-stack, audited implementation.
 
 ## Features
 
