@@ -31,7 +31,7 @@ Companies subject to NIS2 Directive need **demonstrable compliance**. This start
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                  Backend (NIS2 Adapter)                      │
-│  **nis2-spring-shield**                                     │
+│  Supported: Django, Express, Spring Boot, .NET            │
 │  ├── ForensicLogger (HMAC signed logs)                     │
 │  ├── RateLimiter, SessionGuard, TorBlocker                 │
 │  └── → SIEM (Elasticsearch, Splunk, QRadar, etc.)          │
