@@ -24,12 +24,18 @@ import java.util.Map;
 
 /**
  * NIS2 compliance auditing filter for Spring Boot applications.
- * Intercepts all HTTP requests, logs them in JSON format with HMAC-SHA256 integrity
+ * Intercepts all HTTP requests, logs them in JSON format with HMAC-SHA256
+ * integrity
  * signatures, and optionally encrypts PII fields.
  *
- * <p>The filter is auto-configured when nis2-spring-shield is on the classpath.</p>
+ * <p>
+ * The filter is auto-configured when nis2-spring-shield is on the classpath.
+ * </p>
  *
- * <p>Example configuration in application.yml:</p>
+ * <p>
+ * Example configuration in application.yml:
+ * </p>
+ * 
  * <pre>
  * nis2:
  *   enabled: true
@@ -50,20 +56,24 @@ public class Nis2AuditingFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final com.nis2shield.spring.utils.CryptoUtils cryptoUtils;
 
-    public Nis2AuditingFilter(Nis2Properties properties, ObjectMapper objectMapper, com.nis2shield.spring.utils.CryptoUtils cryptoUtils) {
+    public Nis2AuditingFilter(Nis2Properties properties, ObjectMapper objectMapper,
+            com.nis2shield.spring.utils.CryptoUtils cryptoUtils) {
         this.properties = properties;
         this.objectMapper = objectMapper;
         this.cryptoUtils = cryptoUtils;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@org.springframework.lang.NonNull HttpServletRequest request,
+            @org.springframework.lang.NonNull HttpServletResponse response,
+            @org.springframework.lang.NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         long startTime = System.currentTimeMillis();
 
         // Wrap request/response to cache content if needed (for body inspection later)
-        // Note: For now we just log metadata, but wrapping is good practice for future body logging
+        // Note: For now we just log metadata, but wrapping is good practice for future
+        // body logging
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
 
@@ -72,37 +82,38 @@ public class Nis2AuditingFilter extends OncePerRequestFilter {
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             logTransaction(wrappedRequest, wrappedResponse, duration);
-            
+
             // IMPORTANT: Copy content back to response
             wrappedResponse.copyBodyToResponse();
         }
     }
 
-    private void logTransaction(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long durationMs) {
+    private void logTransaction(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
+            long durationMs) {
         try {
             Map<String, Object> logEntry = new HashMap<>();
-            
+
             // WHO
             String ip = request.getRemoteAddr();
             if (properties.getLogging().isAnonymizeIp()) {
                 ip = anonymizeIp(ip);
             }
-            
+
             Map<String, Object> who = new HashMap<>();
             who.put("ip", ip);
             who.put("user_agent", request.getHeader("User-Agent"));
             // User ID would go here if Spring Security is integrated
-            
+
             // WHAT
             Map<String, Object> what = new HashMap<>();
             what.put("method", request.getMethod());
             what.put("url", request.getRequestURI());
-            
+
             // RESULT
             Map<String, Object> result = new HashMap<>();
             result.put("status", response.getStatus());
             result.put("duration_seconds", durationMs / 1000.0);
-            
+
             logEntry.put("who", who);
             logEntry.put("what", what);
             logEntry.put("result", result);
@@ -112,34 +123,34 @@ public class Nis2AuditingFilter extends OncePerRequestFilter {
             if (properties.getLogging().isEncryptPii()) {
                 encryptPiiFields(logEntry);
             }
-            
+
             String jsonLog = objectMapper.writeValueAsString(logEntry);
-            
+
             // Integrity Sign
             String signature = signLog(jsonLog);
-            
+
             Map<String, Object> finalLog = new HashMap<>();
             finalLog.put("log", logEntry);
             finalLog.put("integrity_hash", signature);
-            
+
             auditLogger.info(objectMapper.writeValueAsString(finalLog));
-            
+
         } catch (Exception e) {
             logger.error("Failed to log NIS2 audit entry", e);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private void encryptPiiFields(Map<String, Object> data) {
         // Recursive encryption of PII fields
-        // For simplicity, we define a static list of keys to encrypt. 
+        // For simplicity, we define a static list of keys to encrypt.
         // In prod this could be configurable.
-        String[] sensitiveKeys = {"user_id", "email", "username", "ip", "user_agent"};
-        
+        String[] sensitiveKeys = { "user_id", "email", "username", "ip", "user_agent" };
+
         for (Map.Entry<String, Object> entry : data.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            
+
             if (value instanceof Map) {
                 encryptPiiFields((Map<String, Object>) value);
             } else if (value instanceof String) {
@@ -154,7 +165,8 @@ public class Nis2AuditingFilter extends OncePerRequestFilter {
     }
 
     private String anonymizeIp(String ip) {
-        if (ip == null) return "unknown";
+        if (ip == null)
+            return "unknown";
         // Simple anonymization: mask last octet
         int lastDot = ip.lastIndexOf('.');
         if (lastDot != -1) {
@@ -165,8 +177,9 @@ public class Nis2AuditingFilter extends OncePerRequestFilter {
 
     private String signLog(String content) {
         String key = properties.getIntegrityKey();
-        if (key == null || key.isEmpty()) return "unsigned";
-        
+        if (key == null || key.isEmpty())
+            return "unsigned";
+
         try {
             Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
             SecretKeySpec secret_key = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
