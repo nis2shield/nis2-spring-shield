@@ -8,13 +8,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Map;
 
 /**
  * HashiCorp Vault KMS Provider implementation.
  * Integrates with Vault's Transit secrets engine for key management.
  *
- * <p>Configuration example in application.yml:</p>
+ * <p>
+ * Configuration example in application.yml:
+ * </p>
+ * 
  * <pre>
  * nis2:
  *   kms:
@@ -26,7 +28,10 @@ import java.util.Map;
  *       keyName: nis2-encryption-key
  * </pre>
  *
- * <p>Vault setup commands:</p>
+ * <p>
+ * Vault setup commands:
+ * </p>
+ * 
  * <pre>
  * vault secrets enable transit
  * vault write -f transit/keys/nis2-encryption-key type=aes256-gcm96
@@ -42,7 +47,8 @@ public class VaultKmsProvider implements KmsProvider {
     private final HttpClient httpClient;
 
     public VaultKmsProvider(String vaultAddress, String token, String transitPath) {
-        this.vaultAddress = vaultAddress.endsWith("/") ? vaultAddress.substring(0, vaultAddress.length() - 1) : vaultAddress;
+        this.vaultAddress = vaultAddress.endsWith("/") ? vaultAddress.substring(0, vaultAddress.length() - 1)
+                : vaultAddress;
         this.token = token;
         this.transitPath = transitPath != null ? transitPath : "transit";
         this.httpClient = HttpClient.newBuilder()
@@ -67,10 +73,10 @@ public class VaultKmsProvider implements KmsProvider {
     public void storeKey(String keyId, String keyMaterial) {
         // Vault manages keys internally - we create keys, not store external material
         log.info("Creating key {} in Vault Transit engine", keyId);
-        
+
         try {
             String url = String.format("%s/v1/%s/keys/%s", vaultAddress, transitPath, keyId);
-            
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("X-Vault-Token", token)
@@ -80,7 +86,7 @@ public class VaultKmsProvider implements KmsProvider {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 200 || response.statusCode() == 204) {
                 log.info("Key {} created successfully in Vault", keyId);
             } else {
@@ -94,10 +100,10 @@ public class VaultKmsProvider implements KmsProvider {
     @Override
     public String rotateKey(String keyId) {
         log.info("Rotating key {} in Vault Transit engine", keyId);
-        
+
         try {
             String url = String.format("%s/v1/%s/keys/%s/rotate", vaultAddress, transitPath, keyId);
-            
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("X-Vault-Token", token)
@@ -106,7 +112,7 @@ public class VaultKmsProvider implements KmsProvider {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 200 || response.statusCode() == 204) {
                 log.info("Key {} rotated successfully in Vault", keyId);
                 return "rotated"; // Vault manages the actual key material
@@ -124,7 +130,7 @@ public class VaultKmsProvider implements KmsProvider {
     public boolean keyExists(String keyId) {
         try {
             String url = String.format("%s/v1/%s/keys/%s", vaultAddress, transitPath, keyId);
-            
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("X-Vault-Token", token)
@@ -143,11 +149,11 @@ public class VaultKmsProvider implements KmsProvider {
     @Override
     public void deleteKey(String keyId) {
         log.warn("Key deletion in Vault requires deletion_allowed=true. Enabling and deleting key {}", keyId);
-        
+
         try {
             // First, enable deletion
             String configUrl = String.format("%s/v1/%s/keys/%s/config", vaultAddress, transitPath, keyId);
-            
+
             HttpRequest configRequest = HttpRequest.newBuilder()
                     .uri(URI.create(configUrl))
                     .header("X-Vault-Token", token)
@@ -160,7 +166,7 @@ public class VaultKmsProvider implements KmsProvider {
 
             // Then delete
             String deleteUrl = String.format("%s/v1/%s/keys/%s", vaultAddress, transitPath, keyId);
-            
+
             HttpRequest deleteRequest = HttpRequest.newBuilder()
                     .uri(URI.create(deleteUrl))
                     .header("X-Vault-Token", token)
@@ -169,7 +175,7 @@ public class VaultKmsProvider implements KmsProvider {
                     .build();
 
             HttpResponse<String> response = httpClient.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 204) {
                 log.info("Key {} deleted from Vault", keyId);
             } else {
@@ -184,7 +190,7 @@ public class VaultKmsProvider implements KmsProvider {
     public boolean isAvailable() {
         try {
             String url = String.format("%s/v1/sys/health", vaultAddress);
-            
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .GET()
@@ -202,7 +208,7 @@ public class VaultKmsProvider implements KmsProvider {
     /**
      * Encrypt data using Vault Transit.
      *
-     * @param keyId The key name
+     * @param keyId     The key name
      * @param plaintext Base64-encoded plaintext
      * @return Vault ciphertext (vault:v1:...)
      */
@@ -210,7 +216,7 @@ public class VaultKmsProvider implements KmsProvider {
         try {
             String url = String.format("%s/v1/%s/encrypt/%s", vaultAddress, transitPath, keyId);
             String body = String.format("{\"plaintext\": \"%s\"}", plaintext);
-            
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("X-Vault-Token", token)
@@ -220,7 +226,7 @@ public class VaultKmsProvider implements KmsProvider {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 200) {
                 // Parse ciphertext from response
                 // Response format: {"data": {"ciphertext": "vault:v1:..."}}
@@ -239,7 +245,7 @@ public class VaultKmsProvider implements KmsProvider {
     /**
      * Decrypt data using Vault Transit.
      *
-     * @param keyId The key name
+     * @param keyId      The key name
      * @param ciphertext Vault ciphertext (vault:v1:...)
      * @return Base64-encoded plaintext
      */
@@ -247,7 +253,7 @@ public class VaultKmsProvider implements KmsProvider {
         try {
             String url = String.format("%s/v1/%s/decrypt/%s", vaultAddress, transitPath, keyId);
             String body = String.format("{\"ciphertext\": \"%s\"}", ciphertext);
-            
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("X-Vault-Token", token)
@@ -257,7 +263,7 @@ public class VaultKmsProvider implements KmsProvider {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
             if (response.statusCode() == 200) {
                 // Parse plaintext from response
                 String responseBody = response.body();
