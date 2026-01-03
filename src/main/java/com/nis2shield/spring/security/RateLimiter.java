@@ -2,7 +2,6 @@ package com.nis2shield.spring.security;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 
 import java.time.Duration;
 import java.util.Map;
@@ -28,18 +27,22 @@ public class RateLimiter {
     }
 
     private Bucket createNewBucket(String key) {
-        // Sliding window: Refill 1 token every (window / capacity) interval effectively, 
-        // but Bucket4j 'greedy' refill is simpler for sliding window approximation or use true sliding window
+        // Sliding window: Refill 1 token every (window / capacity) interval
+        // effectively,
+        // but Bucket4j 'greedy' refill is simpler for sliding window approximation or
+        // use true sliding window
         // Here we use classic bandwidth: Capacity tokens per Window.
-        
-        Refill refill = Refill.greedy(capacity, window);
-        Bandwidth limit = Bandwidth.classic(capacity, refill);
-        
+
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(capacity)
+                .refillGreedy(capacity, window)
+                .build();
+
         return Bucket.builder()
                 .addLimit(limit)
                 .build();
     }
-    
+
     public long getRemainingTokens(String ip) {
         Bucket bucket = buckets.get(ip);
         if (bucket == null) {
