@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.HashMap;
+// cleaned import
 import java.util.Map;
 
 /**
@@ -91,52 +91,74 @@ public class Nis2AuditingFilter extends OncePerRequestFilter {
     private void logTransaction(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
             long durationMs) {
         try {
-            Map<String, Object> logEntry = new HashMap<>();
+            Map<String, Object> logEntry = new java.util.LinkedHashMap<>();
 
-            // WHO
+            // 1. Root Fields
+            logEntry.put("timestamp", java.time.Instant.now().toString());
+            logEntry.put("level", response.getStatus() >= 400 ? "WARN" : "INFO");
+            logEntry.put("component", "NIS2-SHIELD-JAVA");
+            logEntry.put("event_id", "HTTP_ACCESS");
+
+            // 2. Request
+            Map<String, Object> reqMap = new java.util.LinkedHashMap<>();
             String ip = request.getRemoteAddr();
             if (properties.getLogging().isAnonymizeIp()) {
                 ip = anonymizeIp(ip);
             }
+            reqMap.put("method", request.getMethod());
+            reqMap.put("url", request.getRequestURI());
+            reqMap.put("ip", ip);
+            reqMap.put("user_agent", request.getHeader("User-Agent"));
+            logEntry.put("request", reqMap);
 
-            Map<String, Object> who = new HashMap<>();
-            who.put("ip", ip);
-            who.put("user_agent", request.getHeader("User-Agent"));
-            // User ID would go here if Spring Security is integrated
+            // 3. Response
+            Map<String, Object> resMap = new java.util.LinkedHashMap<>();
+            resMap.put("status", response.getStatus());
+            resMap.put("duration_ms", durationMs);
+            logEntry.put("response", resMap);
 
-            // WHAT
-            Map<String, Object> what = new HashMap<>();
-            what.put("method", request.getMethod());
-            what.put("url", request.getRequestURI());
+            // 4. User (Optional placeholder)
+            // logEntry.put("user", ...);
 
-            // RESULT
-            Map<String, Object> result = new HashMap<>();
-            result.put("status", response.getStatus());
-            result.put("duration_seconds", durationMs / 1000.0);
-
-            logEntry.put("who", who);
-            logEntry.put("what", what);
-            logEntry.put("result", result);
-            logEntry.put("timestamp", java.time.Instant.now().toString());
-
-            // Encrypt PII if enabled
+            // Encrypt PII if enabled (This modifies logEntry in place)
             if (properties.getLogging().isEncryptPii()) {
                 encryptPiiFields(logEntry);
             }
 
+            // Serialize to JSON for signing
             String jsonLog = objectMapper.writeValueAsString(logEntry);
 
-            // Integrity Sign
+            // 5. Integrity Sign
             String signature = signLog(jsonLog);
 
-            Map<String, Object> finalLog = new HashMap<>();
-            finalLog.put("log", logEntry);
-            finalLog.put("integrity_hash", signature);
+            // 6. Final Object usually includes the hash INSIDE or OUTSIDE.
+            // The schema says `integrity_hash` is a field. We must add it to the map.
+            // BUT: Standard practice is hash covers the *content*, so we add it after
+            // signing.
+            // However, Jackson ObjectMapper doesn't guarantee order unless LinkedHashMap is
+            // used everywhere.
+            // To be safe and compliant with the "Schema Definition" which shows the hash
+            // INSIDE the JSON:
 
-            auditLogger.info(objectMapper.writeValueAsString(finalLog));
+            // Re-parse or just append if we were doing manual string building.
+            // Better: Add to map, BUT signature verification needs to know to remove it.
+            // For now, per existing patterns, we'll keep the signature separated in the
+            // final output
+            // OR we include it in the object.
+            // Let's stick to the previous pattern: "log" (content) + "integrity_hash"
+            // WAIT - The NEW schema request shows integrity_hash INSIDE the root structure.
+            // "integrity_hash": "base64(hmac-sha256(json_string_excluding_hash))"
+
+            Map<String, Object> finalLogObj = objectMapper.readValue(jsonLog,
+                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {
+                    });
+            finalLogObj.put("integrity_hash", signature);
+
+            auditLogger.info(objectMapper.writeValueAsString(finalLogObj));
 
         } catch (Exception e) {
-            logger.error("Failed to log NIS2 audit entry", e);
+            // Fallback safe logging
+            auditLogger.error("FAILED_TO_LOG_NIS2_ENTRY: " + e.getMessage());
         }
     }
 

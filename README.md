@@ -50,7 +50,7 @@ Companies subject to NIS2 Directive need **demonstrable compliance**. This start
 
 *   **Forensic Logging (Audit):**
     *   Captures all HTTP requests and responses.
-    *   **JSON Structured Logs**: Machine-readable format compatible with SIEMs.
+    *   **NIS2-JSON-SCHEMA v1.0**: Standardized, machine-readable format compatible with SIEMs.
     *   **Integrity Signing**: Logs are signed with HMAC-SHA256 to prevent tampering.
     *   **PII Encryption**: Automatically encrypts sensitive fields (User ID, Email, IP) using AES-256.
     *   **IP Anonymization**: Masks the last octet of IP addresses for GDPR compliance.
